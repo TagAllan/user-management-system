@@ -10,9 +10,14 @@ let users = [
 
 let nextId = 2;
 
+// Função para obter e incrementar o ID
+function getNextId() {
+    return nextId++;
+}
+
 module.exports = {
     users,
-    nextId
+    nextId,
+    getNextId
 };
-
 

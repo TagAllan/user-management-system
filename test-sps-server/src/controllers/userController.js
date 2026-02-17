@@ -1,4 +1,4 @@
-const { users, nextID } = require('../database');
+const { users, getNextId } = require('../database');
 
 // Listar usuários
 function listUsers(req, res) {
@@ -18,13 +18,13 @@ function createUser(req, res) {
     }
 
     // Verifica se email existe
-    if (user.find(u => u.email === email)){
+    if (users.find(u => u.email === email)){
         return res.status(400).json({ error: 'Email já cadastrado!'});
     }
 
     // Cria o usuario
     const newUser = {
-        id: nextId,
+        id: getNextId(),
         email,
         name,
         type,
@@ -32,7 +32,7 @@ function createUser(req, res) {
     };
 
     users.push(newUser);
-    nextId++;               // Na ausencia de uma SEQ para isso, "++"!
+    //nextId++;               // Na ausencia de uma SEQ para isso, "++"!
 
     //Retorna o usuaruio!
     const { password: _, ...userWithoutPassword} = newUser;
@@ -44,12 +44,57 @@ function getUser(req, res) {
     const { userId } = req.params;
     const user = users.find(u => u.id === parseInt(userId));
 
-    if (!User) {
+    if (!user) {
         return res.status(404).json({ error: 'Usuario não existe!'});
     }
     
     // Devolve o usuario garantindo que não seja apresentada a senha
     const { password, ...userWithoutPassword } = user;
-    re.json(userWithoutPassword);
+    res.json(userWithoutPassword);
 }
 
+function updateUser(req, res) {
+    const { userId } = req.params;
+    const { email, name, type, password } = req.body;
+
+    const userIndex = users.findIndex(u => u.id === parseInt(userId));
+
+    // Javascript retorna -1 quando findIndex é invalido
+    if (userIndex === -1){
+        return res.status(404).json({ error: 'Usuario não encontrado!' });
+    }
+
+    if (email && users.find(u => u.email === email && u.id !== parseInt(userId))) {
+        return res.status(400).json({ error: 'Email já cadastrado!' });
+    }
+
+    if (email)      users[userIndex].email      = email;
+    if (name)       users[userIndex].name       = name;
+    if (type)       users[userIndex].type       = type;
+    if (password)   users[userIndex].password   = password;
+    
+    const { password: _, ...updatedUser } = users[userIndex];
+    res.json(updatedUser);
+
+}
+
+function deleteUser(req, res) {
+    const { userId } = req.params;
+
+  const userIndex = users.findIndex(u => u.id === parseInt(userId));
+
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'Usuário não encontrado!' });
+  }
+
+  users.splice(userIndex, 1);
+  res.status(204).send();
+}
+
+module.exports = {
+  listUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUser
+};

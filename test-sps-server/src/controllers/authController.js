@@ -7,7 +7,7 @@ function login(req, res) {
     // Procura o usuario no banco
     const user = users.find(u => u.email === email && u.password === password);
     if (!user){
-        return res.status(401).json({ error: 'Credenciais invalidas!'});
+        return res.status(401).json({ error: 'Credenciais invalidas!' });
     }
 
     // Se encontrar, gera um token JWT
