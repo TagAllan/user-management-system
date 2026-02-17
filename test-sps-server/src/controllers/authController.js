@@ -14,12 +14,12 @@ function login(req, res) {
     const token = jwt.sign
     (
         { 
-            id: user.is,
+            id: user.id,
             email: user.email,
             type: user.type
         },
         process.env.JWT_SECRET,
-        { expiresIn: '24'}
+        { expiresIn: '24h'}
     );
 
     // Retorna o token do usuario (Não mostra a senha!)

@@ -1,9 +1,9 @@
-const jws = require('jsonwwebtoken');
+const jwt = require('jsonwebtoken');
 
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split('')[1]; // Bearer Token
+    const token = authHeader && authHeader.split(' ')[1]; // Formato: Bearer Token
 
 
     if (!token) {
@@ -18,3 +18,6 @@ function authenticateToken(req, res, next) {
         next();
     })
 }
+
+module.exports = authenticateToken;
+
